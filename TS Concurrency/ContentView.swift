@@ -8,9 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var photos = [String]()
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        photosList
+            .task {
+                photos.append(contentsOf: await loadImages())
+            }
+    }
+    
+    @ViewBuilder private var photosList: some View {
+        if photos.isEmpty {
+            ProgressView("Loading photos ...")
+        } else {
+            List {
+                ForEach(photos, id: \.self) { photo in
+                    Image(photo)
+                        .resizable()
+                        .scaledToFit()
+                }
+            }
+        }
+    }
+    
+    private func loadImages() async -> [String] {
+        await Task.sleep(5 * 1_000_000_000)
+        return ["Cockatiel01", "Cockatiel02", "Cockatiel03"]
     }
 }
 
